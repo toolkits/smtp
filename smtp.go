@@ -34,8 +34,8 @@ func (this *Smtp) SendMail(from, tos, subject, body string) error {
 	b64 := base64.NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
 	header := make(map[string]string)
-	header["From"] = from.String()
-	header["To"] = tos.String()
+	header["From"] = from
+	header["To"] = tos
 	header["Subject"] = fmt.Sprintf("=?UTF-8?B?%s?=", b64.EncodeToString([]byte(subject)))
 	header["MIME-Version"] = "1.0"
 	header["Content-Type"] = "text/html; charset=UTF-8"
@@ -48,5 +48,5 @@ func (this *Smtp) SendMail(from, tos, subject, body string) error {
 	message += "\r\n" + b64.EncodeToString([]byte(body))
 
 	auth := smtp.PlainAuth("", this.Username, this.Password, hp[0])
-	return smtp.SendMail(this.Address, auth, from, strings.Split(tos, ";"), message)
+	return smtp.SendMail(this.Address, auth, from, strings.Split(tos, ";"), []byte(message))
 }
