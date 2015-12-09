@@ -31,6 +31,22 @@ func (this *Smtp) SendMail(from, tos, subject, body string, contentType ...strin
 		return fmt.Errorf("address format error")
 	}
 
+	arr := strings.Split(tos, ";")
+	count := len(arr)
+	safeArr := make([]string, 0, count)
+	for i := 0; i < count; i++ {
+		if arr[i] == "" {
+			continue
+		}
+		safeArr = append(safeArr, arr[i])
+	}
+
+	if len(safeArr) == 0 {
+		return fmt.Errorf("tos invalid")
+	}
+
+	tos = strings.Join(safeArr, ";")
+
 	b64 := base64.NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
 	header := make(map[string]string)
