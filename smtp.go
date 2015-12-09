@@ -21,7 +21,7 @@ func New(address, username, password string) *Smtp {
 	}
 }
 
-func (this *Smtp) SendMail(from, tos, subject, body string) error {
+func (this *Smtp) SendMail(from, tos, subject, body string, contentType ...string) error {
 	if this.Address == "" {
 		return fmt.Errorf("address is necessary")
 	}
@@ -38,7 +38,13 @@ func (this *Smtp) SendMail(from, tos, subject, body string) error {
 	header["To"] = tos
 	header["Subject"] = fmt.Sprintf("=?UTF-8?B?%s?=", b64.EncodeToString([]byte(subject)))
 	header["MIME-Version"] = "1.0"
-	header["Content-Type"] = "text/html; charset=UTF-8"
+
+	ct := "text/plain; charset=UTF-8"
+	if len(contentType) > 0 && contentType[0] == "html" {
+		ct = "text/html; charset=UTF-8"
+	}
+
+	header["Content-Type"] = ct
 	header["Content-Transfer-Encoding"] = "base64"
 
 	message := ""
